@@ -20,11 +20,6 @@ class CooccurrenceMatrix(nn.Module):
         self.lambda_value = nn.Parameter(torch.tensor(0.5), requires_grad=True)  # 可训练的 lambda_value 参数
 
     def forward(self, labels):
-        # 假设你有一个包含n个样本的batch，每个样本的标签用二进制向量表示
-        # 例如，labels是一个n x 14的矩阵，每行表示一个样本的标签向量
-        # 例如，labels[0]表示第一个样本的标签向量
-        # 初始化一个n x n的共现矩阵，初始值都为0
-        # 初始化一个标签共现矩阵，大小为n x n，初始值都为0
 
         batch_size, num_labels = labels.size()
         torch.set_printoptions(profile="full")
@@ -98,22 +93,12 @@ class SemanticSimilarityLearning(nn.Module):
 
 
     def forward(self, feats, labels):
-        # GCN层的传播
         h = feats
 
-        #计算batch内标签共现情况
         co_occurrence_matrix = self.co_occurrence_matrix(labels)#[bs,bs]
-        #self.co_occurrence_matrix.visualize(co_occurrence_matrix)
-        #targets_matrix = F.sigmoid(self.co_occurrence_matrix(targets))
-        # print(co_occurrence_matrix.shape)
-        #SSL学习模块融合全局特征与标签矩阵
-        # print(scores)
-        # print(h.shape, adjacency_matrix.shape)
         for gcn_layer in self.gcn_layers:
             h = gcn_layer(h, co_occurrence_matrix)
             h = F.leaky_relu(h)
 
-        #print(avg_feats.shape)
-        #patch_feats = torch.cat((avg_feats, patch_feats),dim=1)
         return h
 
