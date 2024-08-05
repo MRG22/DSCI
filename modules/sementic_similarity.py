@@ -15,7 +15,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class CooccurrenceMatrix(nn.Module):
     def __init__(self):
         super(CooccurrenceMatrix, self).__init__()
-        # 进行相似性矩阵的重新加权，这里假设λ = 0.5
         self.c = nn.Parameter(torch.tensor(1.0), requires_grad=True)  # concepts的数量
         self.lambda_value = nn.Parameter(torch.tensor(0.5), requires_grad=True)  # 可训练的 lambda_value 参数
 
@@ -24,13 +23,12 @@ class CooccurrenceMatrix(nn.Module):
         batch_size, num_labels = labels.size()
         torch.set_printoptions(profile="full")
 
-        # 计算标签共现矩阵 Ni,j，使用内积计算
         cooccurrence_matrix = torch.matmul(labels.float(), labels.t().float())
 
-        smoothing_term = 1e-6  # 可以根据实际情况调整平滑项的大小
+        smoothing_term = 1e-6  
         #labels = labels.cpu().numpy()
         sum_labels = torch.sum(labels, dim=1, keepdim=True)
-        # 计算每个 Ni,j 对应的初始相似性矩阵 Mi,j'
+
         cooccurrence_matrix = cooccurrence_matrix / (sum_labels.float() + smoothing_term )
         return cooccurrence_matrix
 
@@ -62,8 +60,8 @@ class GraphConvolution(nn.Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
-        support = torch.mm(input, self.weight)  # (batch_size, out_features)
-        output = torch.mm(adj, support)        # (batch_size, out_features)
+        support = torch.mm(input, self.weight)  
+        output = torch.mm(adj, support)       
         if self.bias is not None:
             return output + self.bias
         else:
