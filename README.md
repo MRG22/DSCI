@@ -1,2 +1,2 @@
 # DSCI
-Basic code for DSCI: Dual-Level Semantic Collaboration and Inference framework for medical report generation
+Basic code for Dual-Level Semantic Collaboration and Inference Network for Medical Image Report Generation
